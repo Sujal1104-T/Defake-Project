@@ -32,7 +32,7 @@ from model.detector import DeepfakeDetector
 
 # Initialize Services
 # Global instantiation to load model once on startup
-video_processor = VideoProcessor(frames_to_extract=15)
+video_processor = VideoProcessor(frames_to_extract=2)
 detector = DeepfakeDetector()
 
 @app.get("/")
