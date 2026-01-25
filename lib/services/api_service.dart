@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 class ApiService {
   // TODO: REPLACE this with your actual Render/Railway URL after deployment
   // Example: "https://truthguard-backend.onrender.com"
-  static const String _productionUrl = ""; 
+  static const String _productionUrl = "https://defake-backend-437i.onrender.com"; 
 
   static String get baseUrl {
     // If we have a production URL and we are on Web or in Release mode, use it
