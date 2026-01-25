@@ -11,7 +11,6 @@ WORKDIR /app
 
 # Install system dependencies for OpenCV and other libs
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
