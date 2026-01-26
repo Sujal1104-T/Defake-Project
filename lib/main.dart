@@ -9,9 +9,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:defake_app/providers/app_state.dart';
 
+import 'package:defake_app/services/api_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Start backend wake-up immediately (non-blocking)
+  ApiService.wakeUp();
+
   // Initialize Firebase
   // Note: For web, Firebase config should be in web/index.html
   // For mobile, this will use google-services.json (Android) or GoogleService-Info.plist (iOS)

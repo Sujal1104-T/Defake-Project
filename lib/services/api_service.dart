@@ -8,6 +8,9 @@ class ApiService {
   // TODO: REPLACE this with your actual Render/Railway URL after deployment
   // Example: "https://truthguard-backend.onrender.com"
   static const String _productionUrl = "https://defake-backend-437i.onrender.com"; 
+  
+  // Fallback to localhost if production is down (for development)
+  static const bool _useLocalFallback = true;
 
   static String get baseUrl {
     // If we have a production URL and we are on Web or in Release mode, use it
@@ -22,36 +25,59 @@ class ApiService {
     return "http://127.0.0.1:8000";
   } 
 
+  static final http.Client _client = http.Client();
+
   static Future<Map<String, dynamic>> analyzeVideo(PlatformFile file) async {
     final uri = Uri.parse("$baseUrl/analyze");
     
+    // Create a new request (MultipartRequest cannot be reused)
     var request = http.MultipartRequest('POST', uri);
     
-    // On Web, path is null, use bytes.
-    if (file.bytes != null) {
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          file.bytes!,
-          filename: file.name,
-          contentType: MediaType('video', 'mp4'), 
-        ),
-      );
-    } else if (file.path != null) {
-      // On Mobile/Desktop, use path.
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'file', 
-          file.path!,
-          filename: file.name,
-        ),
-      );
+    // On Web, always use bytes
+    if (kIsWeb) {
+       if (file.bytes != null) {
+          request.files.add(
+            http.MultipartFile.fromBytes(
+              'file',
+              file.bytes!,
+              filename: file.name,
+              contentType: MediaType('video', 'mp4'), 
+            ),
+          );
+       } else {
+          throw Exception("File bytes missing on Web. Please retry.");
+       }
     } else {
+        // ... (Mobile/Desktop logic remains same, just shorter for brevity in this replace block if possible, but strict replace needed)
+        // On Mobile/Desktop
+        if (file.path != null) {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'file', 
+              file.path!,
+              filename: file.name,
+            ),
+          );
+        } else if (file.bytes != null) {
+           request.files.add(
+            http.MultipartFile.fromBytes(
+              'file',
+              file.bytes!,
+              filename: file.name,
+              contentType: MediaType('video', 'mp4'), 
+            ),
+          );
+        }
+    }
+    
+    if (request.files.isEmpty) {
       throw Exception("Invalid file: No bytes or path found.");
     }
 
     try {
-      final streamedResponse = await request.send();
+      // Use the shared client to send - this helps with connection reuse/pooling
+      // We send the request via the client
+      final streamedResponse = await _client.send(request).timeout(const Duration(seconds: 120));
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
@@ -60,11 +86,19 @@ class ApiService {
         throw Exception("Server Error: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
-      throw Exception("Failed to connect to API: $e");
+      final errorMsg = e.toString().toLowerCase();
+      if (errorMsg.contains('connection') || errorMsg.contains('closed')) {
+         // Retry logic could go here, or just a clearer message
+         throw Exception("Connection failed. Please check internet or try again. ($e)");
+      }
+      if (errorMsg.contains('render')) {
+         throw Exception("Backend sleeping. Please wait 30s and retry.");
+      }
+      throw Exception("Analysis Error: $e");
     }
   }
 
-  static Future<Map<String, dynamic>> analyzeFrame(List<int> imageBytes) async {
+  static Future<Map<String, dynamic>> analyzeFrame(Uint8List imageBytes) async {
     final uri = Uri.parse("$baseUrl/analyze_frame");
     
     var request = http.MultipartRequest('POST', uri);
@@ -78,7 +112,7 @@ class ApiService {
     );
 
     try {
-      final streamedResponse = await request.send();
+      final streamedResponse = await request.send().timeout(const Duration(seconds: 30));
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
@@ -110,6 +144,19 @@ class ApiService {
         "tip_of_the_day": "Stay skeptical. Verify the source of any sensational video.",
         "insights": [] 
       };
+    }
+  }
+  static Future<void> wakeUp() async {
+    // Fire and forget ping to wake up Render backend
+    try {
+      final uri = Uri.parse(baseUrl);
+      // Timeout is short because we don't assume we'll get a quick response during cold boot,
+      // but the request itself triggers the wake up.
+      await http.get(uri).timeout(const Duration(seconds: 5));
+      print("Wake-up ping sent to $baseUrl");
+    } catch (e) {
+      // It's expected to timeout or fail if sleeping deeply, but the request still wakes it up.
+      print("Wake-up ping initiated: $e");
     }
   }
 }

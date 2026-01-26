@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import 'package:image_picker/image_picker.dart';
+
 class UploadAnalysisScreen extends StatefulWidget {
   final bool isVideo;
-  const UploadAnalysisScreen({super.key, required this.isVideo});
+  final bool useCamera; // Add this
+  const UploadAnalysisScreen({super.key, required this.isVideo, this.useCamera = false});
 
   @override
   State<UploadAnalysisScreen> createState() => _UploadAnalysisScreenState();
@@ -27,11 +30,42 @@ class _UploadAnalysisScreenState extends State<UploadAnalysisScreen> {
   void initState() {
     super.initState();
     // Simulate initial delay or instruction
-    if (widget.isVideo) {
-       _pickFile();
-    } else {
-      // Camera logic would go here
-       _status = "Select Video to Analyze";
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.useCamera) {
+          _pickFromCamera();
+        } else {
+          _pickFile();
+        }
+    });
+  }
+
+  Future<void> _pickFromCamera() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? video = await picker.pickVideo(source: ImageSource.camera);
+      
+      if (video != null) {
+        setState(() {
+           // Convert XFile to PlatformFile for consistency
+           _pickedFile = PlatformFile(
+             name: video.name,
+             path: video.path,
+             size: 0, // Not strictly needed for upload logic if path works
+             bytes: null, 
+           );
+          _status = "Video Captured: ${_pickedFile!.name}";
+        });
+        _startUploadAndAnalyze();
+      } else {
+         setState(() {
+           _status = "Camera capture canceled.";
+         });
+      }
+    } catch (e) {
+      setState(() {
+        _isError = true;
+        _errorMessage = "Camera Error: $e";
+      });
     }
   }
 

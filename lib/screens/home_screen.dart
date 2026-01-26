@@ -100,7 +100,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const UploadAnalysisScreen(isVideo: false)),
+                      builder: (context) => const UploadAnalysisScreen(isVideo: true, useCamera: true)),
                 );
               },
               borderRadius: BorderRadius.circular(24),
@@ -179,7 +179,7 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const UploadAnalysisScreen(isVideo: true)),
+                            builder: (context) => const UploadAnalysisScreen(isVideo: true, useCamera: false)),
                       );
                     },
                   ),

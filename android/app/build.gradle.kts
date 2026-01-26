@@ -8,16 +8,16 @@ plugins {
 
 android {
     namespace = "com.defake.defake_app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 35
+    ndkVersion = "26.1.10909125"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     defaultConfig {
@@ -25,10 +25,11 @@ android {
         applicationId = "com.defake.defake_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 24
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -36,6 +37,20 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            force("androidx.browser:browser:1.8.0")
+            force("androidx.core:core-ktx:1.15.0")
+            force("androidx.core:core:1.15.0")
+            force("androidx.activity:activity:1.9.3")
+            force("androidx.fragment:fragment:1.8.5")
+            force("androidx.lifecycle:lifecycle-runtime:2.8.7")
+            force("androidx.lifecycle:lifecycle-common:2.8.7")
+            force("androidx.lifecycle:lifecycle-viewmodel:2.8.7")
+            force("androidx.annotation:annotation:1.9.1")
         }
     }
 }

@@ -63,11 +63,12 @@ class _LearnScreenState extends State<LearnScreen> {
                    final article = entry.value;
                    return _buildArticleCard(
                      context,
-                     article['title'],
-                     article['summary'],
-                     LucideIcons.newspaper, // Generic icon for dynamic news
+                     article['title'] ?? "Unknown Title",
+                     article['summary'] ?? "No summary available.",
+                     LucideIcons.newspaper,
                      idx % 2 == 0 ? AppTheme.secondary : Colors.orange,
                      200 + (idx * 100),
+                     article['source'] ?? "Unknown Source",
                    );
                 }),
               ],
@@ -151,47 +152,112 @@ class _LearnScreenState extends State<LearnScreen> {
   }
 
   Widget _buildArticleCard(
-      BuildContext context, String title, String subtitle, IconData icon, Color color, int delay) {
+      BuildContext context, String title, String subtitle, IconData icon, Color color, int delay, String source) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: GlassCard(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+        padding: EdgeInsets.zero, // Remove padding from container to let InkWell fill it
+        child: InkWell(
+          onTap: () => _showInsightDetails(context, title, subtitle, source),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 12,
-                          color: AppTheme.textSecondary,
-                        ),
+                  child: Icon(icon, color: color, size: 24),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 12,
+                              color: AppTheme.textSecondary,
+                            ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const Icon(LucideIcons.chevronRight, color: AppTheme.textSecondary, size: 16),
+              ],
             ),
-            const Icon(LucideIcons.chevronRight, color: AppTheme.textSecondary, size: 16),
-          ],
+          ),
         ),
       ),
     ).animate().slideX(begin: 0.1, end: 0, delay: delay.ms).fadeIn();
+  }
+
+  void _showInsightDetails(BuildContext context, String title, String summary, String source) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassCard(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceLight,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  "Source: $source",
+                  style: const TextStyle(fontSize: 12, color: Colors.white70),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                summary,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primary,
+                    foregroundColor: Colors.black,
+                  ),
+                  child: const Text("Close"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
