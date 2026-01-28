@@ -54,6 +54,9 @@ python -m venv .venv
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 
 # Install dependencies
+# Install dependencies
+# If you encounter build errors, try upgrading pip first:
+# python -m pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 
 # Run the server
