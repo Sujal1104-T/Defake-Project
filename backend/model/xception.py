@@ -16,11 +16,13 @@ class XceptionDetector(nn.Module):
 def load_model(weights_path=None, device='cpu'):
     model = XceptionDetector(pretrained=True) # Use ImageNet weights initially
     
-    if weights_path and False: # Disabled for now as we don't have the file
+    if weights_path:
         try:
             state_dict = torch.load(weights_path, map_location=device)
-            model.load_state_dict(state_dict)
-            print("Loaded fine-tuned weights.")
+            # If these are ImageNet weights (timm style), we might need to be careful with keys.
+            # But let's try loading strictly first.
+            model.model.load_state_dict(state_dict, strict=False)
+            print(f"Loaded weights from {weights_path}")
         except Exception as e:
             print(f"Could not load weights: {e}. Using ImageNet weights.")
     

@@ -54,3 +54,6 @@ backend/temp_uploads/
 # Secrets
 android/app/google-services.json
 web/firebase-config.js
+
+# Large Model Files
+backend/model/*.pth

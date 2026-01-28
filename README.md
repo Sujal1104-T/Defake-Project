@@ -60,7 +60,13 @@ source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -r requirements.txt
 
 # Run the server
-uvicorn main_fast:app --reload --host 0.0.0.0 --port 8000
+# Run the server
+# Note: For real detection, ensure you have the model weights.
+# Download: http://data.lip6.fr/cadene/pretrainedmodels/xception-b5690688.pth
+# Save to: backend/model/xception-b5690688.pth
+
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
 ```
 
 ### 2. Frontend Setup

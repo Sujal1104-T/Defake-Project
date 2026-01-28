@@ -14,9 +14,9 @@ class ApiService {
 
   static String get baseUrl {
     // If we have a production URL and we are on Web or in Release mode, use it
-    if (_productionUrl.isNotEmpty) {
-      if (kIsWeb || kReleaseMode) return _productionUrl;
-    }
+      // Only use production URL in Release mode
+      // This allows Debug builds (web/mobile) to use localhost
+      if (kReleaseMode) return _productionUrl;
 
     if (kIsWeb) return "http://127.0.0.1:8000";
     // Android Emulator uses 10.0.2.2 to access host localhost
