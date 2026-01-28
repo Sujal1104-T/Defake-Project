@@ -50,3 +50,7 @@ backend/*.py[cod]
 backend/.venv/
 backend/venv/
 backend/temp_uploads/
+
+# Secrets
+android/app/google-services.json
+web/firebase-config.js

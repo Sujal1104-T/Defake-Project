@@ -72,7 +72,23 @@ flutter run -d android
 flutter run -d chrome
 ```
 
+
+### 3. Firebase Setup (Secrets)
+**Important:** This project uses Firebase. You need to provide your own configuration files as they are ignored by git for security.
+
+#### Android
+1.  Download `google-services.json` from your Firebase Console.
+2.  Place it in `android/app/google-services.json`.
+
+#### Web
+1.  Copy the example config:
+    ```bash
+    cp web/firebase-config.example.js web/firebase-config.js
+    ```
+2.  Edit `web/firebase-config.js` and add your Firebase keys.
+
 ---
+
 
 ## 📱 Build Configurations (Android)
 
