@@ -1,6 +1,14 @@
 # TruthGuard - AI-Powered Deepfake Detection Platform 🛡️
 
+![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![License](https://img.shields.io/badge/License-Read--Only-red?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Android_%7C_Web-orange?style=for-the-badge)
+
 **TruthGuard** is a cutting-edge deepfake detection system designed to protect users from manipulated media in real-time. Built with a **Flutter** frontend and a robust **Python (FastAPI)** backend, it leverages state-of-the-art Deep Learning models (**XceptionNet**) to analyze videos and live screen content for signs of manipulation.
+
+---
 
 ## 🌟 Key Features
 
@@ -19,6 +27,27 @@
 - **Scan History**: Keep track of all your past analyses with Firebase integration.
 - **Notifications**: Stay updated with the latest security tips and detection alerts.
 - **Deepfake Academy**: Learn how to spot deepfakes manually with our educational resources.
+
+---
+
+## 📂 Project Structure
+
+```text
+Defake/
+├── android/            # Android native code (Kotlin/Gradle)
+├── backend/            # Python FastAPI Backend
+│   ├── model/          # AI Model logic & weights
+│   ├── main.py         # API Entry point
+│   └── requirements.txt
+├── lib/                # Flutter Frontend Code
+│   ├── providers/      # State Management (Provider)
+│   ├── screens/        # UI Pages (Home, Login, Analysis)
+│   ├── services/       # API, Auth, & Background Services
+│   ├── theme/          # App Design System
+│   └── main.dart       # App Entry point
+├── web/                # Web entry point & assets
+└── assets/             # Static assets (images, icons)
+```
 
 ---
 
@@ -42,62 +71,52 @@
 
 ### Prerequisites
 - **Flutter SDK**: `3.x`
-- **Python**: `3.9+`
+- **Python**: `3.9+` (3.13 supported)
 - **Android Studio**: For APK builds (Android SDK 35, NDK 26.1.10909125)
 
 ### 1. Backend Setup
 The backend handles the heavy lifting of model inference.
+
 ```bash
 cd backend
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 
-# Install dependencies
-# Install dependencies
-# If you encounter build errors, try upgrading pip first:
-# python -m pip install --upgrade pip setuptools wheel
+# Create & Activate Virtual Environment
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# Mac/Linux:
+source .venv/bin/activate
+
+# Install Dependencies
 pip install -r requirements.txt
 
-# Run the server
-# Run the server
-# Note: For real detection, ensure you have the model weights.
-# Download: http://data.lip6.fr/cadene/pretrainedmodels/xception-b5690688.pth
-# Save to: backend/model/xception-b5690688.pth
-
+# Run the Server
+# Ensure you have the model weights in backend/model/xception-b5690688.pth
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
-
 ```
 
+> **Note**: Download the pre-trained Xception weights if not already present: [Link](http://data.lip6.fr/cadene/pretrainedmodels/xception-b5690688.pth) -> Save to `backend/model/xception-b5690688.pth`
+
 ### 2. Frontend Setup
+
 ```bash
-# Get dependencies
+# Install Dependencies
 flutter pub get
 
-# Run on Android
+# Run on Android (Ensure Emulator/Device is connected)
 flutter run -d android
 
 # Run on Web
 flutter run -d chrome
 ```
 
-
 ### 3. Firebase Setup (Secrets)
-**Important:** This project uses Firebase. You need to provide your own configuration files as they are ignored by git for security.
+**Important:** You need your own Firebase configuration files.
 
-#### Android
-1.  Download `google-services.json` from your Firebase Console.
-2.  Place it in `android/app/google-services.json`.
-
-#### Web
-1.  Copy the example config:
-    ```bash
-    cp web/firebase-config.example.js web/firebase-config.js
-    ```
-2.  Edit `web/firebase-config.js` and add your Firebase keys.
+- **Android**: Place `google-services.json` in `android/app/`.
+- **Web**: Create `web/firebase-config.js` with your Firebase SDK keys.
 
 ---
-
 
 ## 📱 Build Configurations (Android)
 
@@ -106,7 +125,7 @@ To ensure stability, `android/app/build.gradle.kts` enforces specific library ve
 - **Min SDK**: 23 (Android 6.0)
 - **Kotlin**: 2.1.0
 
-> **Note**: If you encounter `NDK not found` errors, delete `C:\Users\<user>\AppData\Local\Android\sdk\ndk` and let Flutter re-download the correct version.
+> **Troubleshooting**: If you see `NDK not found` errors, delete `C:\Users\<user>\AppData\Local\Android\sdk\ndk` and run `flutter build apk` to let it re-download the correct version.
 
 ---
 
@@ -120,4 +139,8 @@ To ensure stability, `android/app/build.gradle.kts` enforces specific library ve
 ---
 
 ## 📄 License
-Distributed under the MIT License. See `LICENSE` for more information.
+This project is licensed under a **Read-Only License**.
+
+Copyright (c) 2026 Sujal Thakur.
+The code is provided for educational and review purposes only. **Copying, usage, or deployment is strictly prohibited.**
+See `LICENSE` for full terms.
